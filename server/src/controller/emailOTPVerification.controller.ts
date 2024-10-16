@@ -112,7 +112,11 @@ const emailOTPVerification = {
       if (!process.env.JWT_SECRET) {
         throw new Error("JWT_SECRET is not defined in environment variables");
       }
-      const token = jwt.sign({ id: userId }, process.env.JWT_SECRET, {
+      const payload = {
+        id: userId,
+        email: user?.companyEmail
+      };
+      const token = jwt.sign(payload, process.env.JWT_SECRET, {
         expiresIn: 86400, // 24 hours
       });
 
@@ -120,6 +124,7 @@ const emailOTPVerification = {
       res?.status(200).json({
         status: "SUCCESS",
         message: "OTP verified successfully",
+        name: user?.name,
         token,
       });
     } catch (error) {

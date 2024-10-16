@@ -30,6 +30,7 @@ const SignupController: any = {
         data: {
           id: savedUser._id,
           companyEmail: savedUser.companyEmail,
+          name: savedUser.name,
           isVerified: savedUser.isVerified,
         }
       });
