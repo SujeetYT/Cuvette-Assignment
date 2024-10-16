@@ -1,10 +1,14 @@
 import { Request, Response } from "express";
-import { get } from "http";
 
-const Interview = require('../models/interview.model');
+import Interview from '../models/interview.model';
+import { JwtPayload } from "jsonwebtoken";
+
+interface AuthenticatedRequest extends Request {
+  user?: string | JwtPayload;
+}
 
 const interviewController = {
-  create: async (req: Request, res: Response) => {
+  create: async (req: AuthenticatedRequest, res: Response):Promise<any> => {
     if (!req.body) {
       res.status(400).send({
         message: 'Form can not be empty!',
@@ -13,14 +17,19 @@ const interviewController = {
     }
 
     try {
-      // console.log("Request Body :: ", req.body);
+      const user = req?.user;
+      let userId = "";
+      if (typeof user !== 'string' && user?.id) {
+        userId = user.id;
+      }
+
       const interview = {
         jobTitle: req.body.jobTitle,
         jobDescription: req.body.jobDescription,
         experienceLevel: req.body.experienceLevel,
         candidateEmails: req.body.candidateEmails,
         endDate: req.body.endDate,
-        // createdBy: req.body.createdBy,
+        createdBy: userId,
       }
       
       // console.log("Debug Point :: ");
@@ -38,11 +47,16 @@ const interviewController = {
       });
     }
   },
-
-  get: async (req: Request, res: Response) => {
+  get: async (req: AuthenticatedRequest, res: Response):Promise<any> => {
     try {
-      // userId = req.cookies.userId;
-      const interviews = await Interview.find();
+      const user = req?.user;
+      let userId = "";
+      if (typeof user !== 'string' && user?.id) {
+        userId = user.id;
+      }
+      
+      // find all interviews which is created by this id
+      const interviews = await Interview.find({createdBy: userId});
       res.status(200).send(interviews);
     } catch (error: any) {
       res.status(500).send({
@@ -53,4 +67,4 @@ const interviewController = {
 }
 
 
-module.exports = interviewController;
+export default interviewController;

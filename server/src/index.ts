@@ -1,9 +1,9 @@
 import dotenv from 'dotenv';
 import express from 'express';
-const DatabaseConnection = require("./config/DatabaseConnection");
-const handleRequests = require("./services/handleRequest");
-const cookieParser = require('cookie-parser');
-const cors = require('cors');
+import { DatabaseConnection } from './config/DatabaseConnection';
+import { handleRequest } from './services/handleRequest';
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
 
 // initialize configuration
 dotenv.config();
@@ -18,7 +18,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 
 
-handleRequests(app);
+handleRequest(app);
 
 
 app.listen(PORT, () => {

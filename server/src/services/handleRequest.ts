@@ -1,12 +1,10 @@
-const Signup = require("../routes/signup");
-const Dashboard = require("../routes/dahsboard");
+import Signup from "../routes/signup";
+import Dashboard from "../routes/dahsboard";
 
 import { Application } from 'express';
 
-const handleRequest = (app: Application) => {
+export const handleRequest = (app: Application) => {
   app.use('/api', Signup)
   app.use('/api', Dashboard)
   // app.use('/api', Login)
 }
-
-module.exports = handleRequest;

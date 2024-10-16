@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 
-const DatabaseConnection = async ()=>{
+export async function DatabaseConnection(): Promise<void>{
   const MONGO_URI = process.env.MONGO_URI || "";
   try {
     await mongoose.connect(MONGO_URI, {
@@ -15,4 +15,3 @@ const DatabaseConnection = async ()=>{
   }
 }
 
-module.exports = DatabaseConnection;

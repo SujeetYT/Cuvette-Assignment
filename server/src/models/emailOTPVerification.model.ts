@@ -19,4 +19,4 @@ const EmailOTPVerificationSchema = new mongoose.Schema({
 });
 
 const EmailOTPVerification = mongoose.model('EmailOTPVerification', EmailOTPVerificationSchema);
-module.exports = EmailOTPVerification;
+export default EmailOTPVerification;

@@ -1,16 +1,17 @@
-// const express = require('express');
-const dahsboardRouter = require('express').Router();
+import express from 'express';
+const dahsboardRouter = express.Router();
 
 
 // controllers
-const interviewController = require("../controller/interview.controller");
+import interviewController from "../controller/interview.controller";
 
 //middlewares
-const isAuthenticated = require("../middlewares/isAuthenticated");
+import {isAuthenticated} from "../middlewares/isAuthenticated";
 
 
 // routes
 dahsboardRouter.post('/dashboard/createInterview', isAuthenticated, interviewController.create)
+dahsboardRouter.get('/dashboard/getInterviews', isAuthenticated, interviewController.get)
 
 
-module.exports = dahsboardRouter;
+export default dahsboardRouter;

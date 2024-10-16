@@ -1,8 +1,9 @@
-const SignupRouter = require('express').Router();
+import express from "express";
+const SignupRouter = express.Router();
 
 // controllers
-const SignupController = require("../controller/signup.controller");
-const emailOTPVerification = require("../controller/emailOTPVerification.controller")
+import SignupController from "../controller/signup.controller";
+import emailOTPVerification from "../controller/emailOTPVerification.controller"
 
 
 // routes
@@ -12,4 +13,4 @@ SignupRouter.post('/verifyEmailOTP', emailOTPVerification.verifyOTP)
 SignupRouter.post('/sendOtpVerificationPhone', SignupController.create)
 
 
-module.exports = SignupRouter;
+export default SignupRouter;

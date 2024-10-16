@@ -6,26 +6,31 @@ interface AuthenticatedRequest extends Request {
   user?: string | JwtPayload;
 }
 
-const isAuthenticated = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+export function isAuthenticated(req: AuthenticatedRequest, res: Response, next: NextFunction):any{
   let token = req.headers['authorization']
   token = token?.split(' ')[1];
 
   if (!token) {
     return res.status(401).json({
+      message: 'Token is required',
+    });
+  }
+  
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  
+  if(!decoded){
+    return res.status(401).json({
       message: 'Unauthorized Access',
     });
   }
 
-  jwt.verify(token, process.env.JWT_SECRET, (err: any, decoded: any) => {
-    if (err) {
-      return res.status(401).json({
-        message: 'Unauthorized Access',
-      });
-    }
-    req.user = decoded;
-    next();
-  });
+  if (decoded.iat >= decoded.exp) {
+    return res.status(401).json({
+      message: 'Token expired',
+    });
+  }
+
+  req.user = decoded;
+  next();
 };
 
-
-module.exports = isAuthenticated;

@@ -3,11 +3,11 @@ dotenv.config();
 
 import bcrypt from "bcrypt";
 import { Request, Response } from "express";
-const generateOTP = require("../utils/generateOTP")
-const EmailOTPVerification = require('../models/emailOTPVerification.model');
-const transporter = require("../utils/mailTransport")
-const User = require("../models/user.model");
-const jwt = require("jsonwebtoken");
+import generateOTP from "../utils/generateOTP";
+import EmailOTPVerification from '../models/emailOTPVerification.model';
+import transporter from "../utils/mailTransport";
+import User from "../models/user.model";
+import jwt from "jsonwebtoken";
 
 
 const emailOTPVerification = {
@@ -15,7 +15,7 @@ const emailOTPVerification = {
  * Sends an OTP verification email to the specified email address.
  *
  */
-  sendOTP: async (req: Request, res: Response) => {
+  sendOTP: async (req: Request, res: Response):Promise<any> => {
     try {
       const { _id, email } = req.body;
 
@@ -75,7 +75,7 @@ const emailOTPVerification = {
  * Verifies sent OTP .
  *
  */
-  verifyOTP: async (req: Request, res: Response) => {
+  verifyOTP: async (req: Request, res: Response):Promise<any> => {
     try {
       const { userId, otp } = req.body;
       
@@ -98,7 +98,7 @@ const emailOTPVerification = {
         });
       }
 
-      if (otpVerification.expiry < Date.now()) {
+      if (otpVerification.expiry.getTime() < Date.now()) {
         return res?.status(400).json({
           status: "FAILED",
           message: "OTP has expired",
@@ -106,14 +106,17 @@ const emailOTPVerification = {
       }
 
       // set user as verified
-      // const user = await User.findOneAndUpdate({ _id: userId }, { isVerified: true });
+      const user = await User.findOneAndUpdate({ _id: userId }, { isVerified: true });
       // console.log("User ::", user);
       
+      if (!process.env.JWT_SECRET) {
+        throw new Error("JWT_SECRET is not defined in environment variables");
+      }
       const token = jwt.sign({ id: userId }, process.env.JWT_SECRET, {
         expiresIn: 86400, // 24 hours
       });
 
-      await EmailOTPVerification.delete
+      await EmailOTPVerification.deleteOne({ userId });
       res?.status(200).json({
         status: "SUCCESS",
         message: "OTP verified successfully",
@@ -130,4 +133,4 @@ const emailOTPVerification = {
   }
 }
 
-module.exports = emailOTPVerification;
+export default emailOTPVerification;

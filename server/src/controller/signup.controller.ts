@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-const User = require('../models/user.model');
+import User from '../models/user.model';
 
 const SignupController: any = {
-  create: async (req: Request, res: Response) => {
+  create: async (req: Request, res: Response):Promise<any> => {
     if (!req.body) {
       res.status(400).send({
         message: 'Content can not be empty!',
@@ -41,7 +41,7 @@ const SignupController: any = {
   },
 };
 
-module.exports = SignupController;
+export default SignupController;
 
 /*
       /signup
