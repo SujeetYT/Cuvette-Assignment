@@ -2,6 +2,11 @@ import React, { useEffect } from "react";
 import { IconPaths } from "../../constants/iconPaths";
 import styles from "../../styles/Signup/signupForm.module.css"
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import axios from "axios";
+import { environments } from "../../constants/environments";
+import { useDispatch } from "react-redux";
+import { logIn } from "../../redux/slices/loggedInSlice";
 
 const  OtpVerifyForm = () => {
   const emailOTPRef = React.useRef<HTMLInputElement>(null);
@@ -11,24 +16,51 @@ const  OtpVerifyForm = () => {
   const [emailVerified, setEmailVerified] = React.useState(false);
   const [mobileVerified, setMobileVerified] = React.useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
 
-  const handleEmailOTPSubmit = (e: React.FormEvent) => {
+  const handleEmailOTPSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const emailOTP = emailOTPRef.current?.value;
-    console.log("data", emailOTP);
+    try {
+      const emailOTP = emailOTPRef.current?.value;
 
-    // verify email OTP
-    setEmailVerified(true);
+      const data = {
+        "userId": localStorage.getItem("userId"),
+        "otp": emailOTP
+      }
+      // verify email OTP
+      const url = `${environments.serverBaseUrl}/api/verifyEmailOTP`;
+      const response = await axios.post(url, data);
+
+      if(response.status === 200) {
+        toast.success(response?.data.message);
+        localStorage.setItem("token", response?.data.token);
+        setEmailVerified(true);
+
+        localStorage.removeItem("userId");
+        localStorage.removeItem("email");
+        dispatch(logIn())
+      }
+  
+    } catch (error) {
+      toast.error("Unexpected error occurred");
+      console.log(error);
+      
+    }
   }
 
   const handleMobileOTPSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const mobileOTP = mobileOTPRef.current?.value;
-    console.log("data", mobileOTP);
-
-    // verify mobile OTP
-    setMobileVerified(true);
+    try {
+      // const mobileOTP = mobileOTPRef.current?.value;
+      // console.log("data", mobileOTP);
+  
+      setMobileVerified(true);
+    } catch (error) {
+      // toast.error(response?.data.message);
+      console.log(error);
+      
+    }
   }
 
   useEffect(() => {

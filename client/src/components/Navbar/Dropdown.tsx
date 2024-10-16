@@ -2,7 +2,7 @@ import { IconPaths } from "../../constants/iconPaths";
 import styles from "../../styles/Navbar/dropdown.module.css";
 
 const Dropdown = () => {
-  const name = "Sujeet Kumar";
+  const name: string = localStorage.getItem("name") || "";
 
   const icon: any = name.split(" ")[0].charAt(0).toUpperCase();
 

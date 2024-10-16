@@ -1,9 +1,21 @@
 .sidebar{
   height: 100vh;
   border-right: 1px solid #a8a8a878;
+  position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 .options{
   padding: 15px;
   margin: 20px 0;
+}
+
+.logout{
+  margin-bottom: 20px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  margin: 20px 0;
+  padding: 15px;
 }

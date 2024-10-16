@@ -1,21 +1,27 @@
 import { Link } from "react-router-dom";
 import styles from "../../styles/Dashboard/dashboard.module.css"
+import React, { useEffect } from "react";
+import { environments } from "../../constants/environments";
+import axios from "axios";
+import { toast } from "react-toastify";
 
-const renderJobPosts = (myJobPosts: any[])=>{
+const renderJobPosts = (interviews: any[])=>{
   return (
     <>
-      {myJobPosts.map((jobPost:any, index:number)=>{
+      {interviews.map((jobPost:any, index:number)=>{
+        const date = new Date(jobPost.endDate);
+        const endDate = date.toISOString().split('T')[0]
         return (
           <div key={index} className={styles.jobPostCard}>
             <div className={styles.jobPostCardTitle}>
-              <p>{jobPost.title}</p>
+              <p>{jobPost.jobTitle}</p>
             </div>
             <div className={styles.jobPostCardDescription}>
-              <p>{jobPost?.description.substring(0, 60)+"..."}</p>
+              <p>{jobPost?.jobDescription.substring(0, 60)+"..."}</p>
             </div>
             <div className={styles.jobPostCardFooter}>
               <p>{jobPost.experienceLevel}</p>
-              <p>{jobPost.endDate}</p>
+              <p>{endDate}</p>
             </div>
           </div>
         )
@@ -25,14 +31,28 @@ const renderJobPosts = (myJobPosts: any[])=>{
 }
 
 const HomeDashboard = () => {
-  const myJobPosts:any[] = [
-    {
-      title: "Software Engineer",
-      description: "Software Engineer Description lorem ipsum doller sit ammet",
-      experienceLevel: "Mid Level",
-      endDate: "2022-12-12"
-    },
-  ]
+  const [interviews, setInterviews] = React.useState<any>([]);
+
+  async function getAllInterviews(){
+    try {
+      const url = `${environments.serverBaseUrl}/api/dashboard/getInterviews`;
+      const header = {
+        Authorization: `Bearer ${localStorage.getItem("token")}`
+      }
+      const response = await axios.get(url, {headers: header});
+      if(response.status === 200) {
+        setInterviews(response.data);
+      }
+      // console.log(response.data);
+    } catch (error) {
+      toast.error("Unexpected error occurred");
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    getAllInterviews();
+  }, []);
   return (
     <div className={styles.container}>
       <div>
@@ -42,12 +62,12 @@ const HomeDashboard = () => {
       </div>
       <p>Interview Posts: </p>
       <div className={styles.myJobPosts}>
-        {myJobPosts.length === 0 ? 
+        {interviews.length === 0 ? 
           <div>
             <h3>No Interview Posts Yet</h3>
             <p>Create New One</p>
           </div> 
-          : renderJobPosts(myJobPosts)
+          : renderJobPosts(interviews)
         }
       </div>
     </div>

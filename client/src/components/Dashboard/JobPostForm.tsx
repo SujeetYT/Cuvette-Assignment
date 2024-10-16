@@ -3,6 +3,9 @@ import styles from "../../styles/Dashboard/dashboard.module.css"
 import TagInputBox from "./TagInputBox";
 
 import { RefObject } from "react";
+import { environments } from "../../constants/environments";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 interface FormField {
   label: string,
@@ -76,19 +79,38 @@ const JobPostForm = () => {
     }
   ]
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    try {
+      // send to the server
+      const createInterviewPayload = {
+        jobTitle: titleRef.current?.value,
+        jobDescription: descriptionRef.current?.value,
+        experienceLevel: experienceRef.current?.value,
+        candidateEmails: allTags,
+        endDate: endDateRef.current?.value
+      }
+      // verify email OTP
+      const url = `${environments.serverBaseUrl}/api/dashboard/createInterview`;
+      const header = {
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("token")}`
+        }
+      }
 
-    const data = {
-      title: titleRef.current?.value,
-      description: descriptionRef.current?.value,
-      experience: experienceRef.current?.value,
-      endDate: endDateRef.current?.value,
-      candidates: allTags
+      console.log("createInterviewPayload", createInterviewPayload);
+      
+      const response = await axios.post(url, createInterviewPayload, header);
+  
+      if(response.status === 201) {
+        toast.success(response?.data.message);
+        console.log(response?.data.message);
+      }
+    } catch (error) {
+      toast.error("Unexpected error occurred");
+      console.log(error);
     }
 
-    console.log("Data: ", data);
-    // send to the server
   }
 
   return (

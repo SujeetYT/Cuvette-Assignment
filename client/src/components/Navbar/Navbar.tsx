@@ -3,9 +3,11 @@ import { Link } from "react-router-dom";
 import { ImagePaths } from "../../constants/imagePaths.ts";
 import styles from "../../styles/Navbar/navbar.module.css"
 import Dropdown from "./Dropdown.tsx";
+import { useSelector } from "react-redux";
 
 const Navbar = () => {
-  const isLoggedIn:Boolean = true;
+  const isLoggedIn:Boolean = useSelector((state:any) => state.isLoggedIn.loggedIn);
+  
   return (
     <div className={styles.navbar}>
       <div className={styles.cuvetteLogo}>

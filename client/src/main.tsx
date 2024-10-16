@@ -16,6 +16,9 @@ import Signup from './routes/Signup.tsx';
 import Dashboard from './routes/Dashboard.tsx';
 import HomeDashboard from './components/Dashboard/HomeDashboard.tsx';
 import CreateJobPost from './components/Dashboard/CreateJobPost.tsx';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 
 createRoot(document.getElementById('root')!).render(
@@ -23,6 +26,7 @@ createRoot(document.getElementById('root')!).render(
     <Provider store={store}>
       <BrowserRouter>
         <Navbar />
+        <ToastContainer />
         <Routes>
           <Route path="/" element={<App />} />
           <Route path="/signup" element={<Signup />} />
