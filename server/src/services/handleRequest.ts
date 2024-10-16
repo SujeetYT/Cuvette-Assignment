@@ -1,5 +1,5 @@
-const Signup = require("../routes/signup.ts");
-const Dashboard = require("../routes/dahsboard.ts");
+const Signup = require("../routes/signup");
+const Dashboard = require("../routes/dahsboard");
 
 import { Application } from 'express';
 
