@@ -1,0 +1,19 @@
+.options{
+  display: flex;
+  gap: 1rem;
+  line-height: 1.7rem;
+  border: 2px solid #A8A8A8;
+  border-radius: 7px;
+  padding: 7px 10px;
+}
+
+.icon{
+  font-size: 1.2rem;
+  color: #000;
+  width: 1.7rem;
+  height: 1.7rem;
+  text-align: center;
+  line-height: 1.7rem;
+  background-color: #c4c4c4;
+  border-radius: 50%;
+}

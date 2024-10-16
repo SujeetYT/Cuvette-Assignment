@@ -1,0 +1,30 @@
+.navbar{
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.cuvetteLogo{
+  width: 150px;
+  display: flex;
+  align-items: center;
+}
+
+.contact {
+  color: #576474;
+  font-size: 1rem;
+  text-decoration: none;
+  transition: color 0.3s;
+  cursor: pointer;
+}
+
+.options{
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+}
