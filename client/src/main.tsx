@@ -18,6 +18,7 @@ import HomeDashboard from './components/Dashboard/HomeDashboard.tsx';
 import CreateJobPost from './components/Dashboard/CreateJobPost.tsx';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Login from './routes/Login.tsx';
 
 
 
@@ -30,7 +31,7 @@ createRoot(document.getElementById('root')!).render(
         <Routes>
           <Route path="/" element={<App />} />
           <Route path="/signup" element={<Signup />} />
-          {/* <Route path="/login" element={<Login />} /> */}
+          <Route path="/login" element={<Login />} />
           <Route path="/dashboard" element={<Dashboard />}>
             <Route path='' element={<HomeDashboard />} />
             <Route path='createJobPost' element={<CreateJobPost />} />

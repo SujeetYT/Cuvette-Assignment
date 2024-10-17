@@ -4,9 +4,15 @@ import { ImagePaths } from "../../constants/imagePaths.ts";
 import styles from "../../styles/Navbar/navbar.module.css"
 import Dropdown from "./Dropdown.tsx";
 import { useSelector } from "react-redux";
+import React, { useEffect } from "react";
 
 const Navbar = () => {
-  const isLoggedIn:Boolean = useSelector((state:any) => state.isLoggedIn.loggedIn);
+  const [isLoggedIn, setIsLoggedIn] = React.useState<boolean>(false);
+
+  const loggedInState:boolean = useSelector((state:any) => state.isLoggedIn.loggedIn);
+  useEffect(()=>{
+    setIsLoggedIn(loggedInState);
+  },[loggedInState])
   
   return (
     <div className={styles.navbar}>

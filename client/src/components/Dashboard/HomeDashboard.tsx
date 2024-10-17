@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 import { environments } from "../../constants/environments";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const renderJobPosts = (interviews: any[])=>{
   return (
@@ -32,12 +33,23 @@ const renderJobPosts = (interviews: any[])=>{
 
 const HomeDashboard = () => {
   const [interviews, setInterviews] = React.useState<any>([]);
+  const navigate = useNavigate();
 
   async function getAllInterviews(){
     try {
       const url = `${environments.serverBaseUrl}/api/dashboard/getInterviews`;
+      let token = "";
+
+      if(localStorage.getItem("token")){
+        token = localStorage.getItem("token") as string;
+      }else{
+        toast.error("Please login to view this page");
+        navigate("/");
+        return;
+      }
+
       const header = {
-        Authorization: `Bearer ${localStorage.getItem("token")}`
+        Authorization: `Bearer ${token}`
       }
       const response = await axios.get(url, {headers: header});
       if(response.status === 200) {

@@ -1,10 +1,19 @@
+import React, { useEffect } from "react";
 import { IconPaths } from "../../constants/iconPaths";
 import styles from "../../styles/Navbar/dropdown.module.css";
 
 const Dropdown = () => {
-  const name: string = localStorage.getItem("name") || "";
+  const [name, setName] = React.useState<string | null>("");
+  const [icon, setIcon] = React.useState<string | null>("");
+  useEffect(()=>{
+    if(localStorage.getItem("name")){
+      setName(localStorage.getItem("name"));
 
-  const icon: any = name.split(" ")[0].charAt(0).toUpperCase();
+      const icon: any = name ? name.split(" ")[0].charAt(0).toUpperCase() : "";
+      setIcon(icon);
+    }
+    
+  })
 
   return (
     <div className={styles.options}>

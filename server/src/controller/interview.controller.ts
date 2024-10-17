@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 
 import Interview from '../models/interview.model';
 import { JwtPayload } from "jsonwebtoken";
+import emailAutomation from "../services/emailAutomation";
 
 interface AuthenticatedRequest extends Request {
   user?: string | JwtPayload;
@@ -36,7 +37,19 @@ const interviewController = {
       const newInterview = new Interview(interview);
       const savedInterview = await newInterview.save();
       // console.log("Interview Created :: ", savedInterview);
-      
+
+      // sending email to the candidates who are shortlisted for the interview
+      const automatedEmailOptions = {
+        to: interview.candidateEmails,
+        subject: "Shortlisted for Interview",
+        jobTitle: interview.jobTitle,
+        jobDescription: interview.jobDescription,
+        experienceLevel: interview.experienceLevel,
+        endDate: interview.endDate,
+      }
+      await emailAutomation(automatedEmailOptions)
+
+
       res.status(201).json({
         message: "Interview Created Successfully", 
         jobId: savedInterview._id

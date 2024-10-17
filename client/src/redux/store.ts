@@ -1,11 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit'
 import signUpReducer from './slices/signupStateSlice'
 import isLoggedInReducer from './slices/loggedInSlice'
+import loginReducer from './slices/loginStateSlice'
 
 export const store = configureStore({
   reducer: {
     signupState: signUpReducer,
     isLoggedIn: isLoggedInReducer,
+    loginState: loginReducer,
   },
 })
 

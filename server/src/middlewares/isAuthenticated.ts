@@ -7,10 +7,11 @@ interface AuthenticatedRequest extends Request {
 }
 
 export function isAuthenticated(req: AuthenticatedRequest, res: Response, next: NextFunction):any{
-  let token = req.headers['authorization']
+  
+  let token:string | undefined | null = req.headers['authorization']
   token = token?.split(' ')[1];
 
-  if (!token) {
+  if (token === "" || token === undefined || token === null || token === "null") {
     return res.status(401).json({
       message: 'Token is required',
     });

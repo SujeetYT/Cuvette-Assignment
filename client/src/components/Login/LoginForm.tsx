@@ -5,46 +5,18 @@ import axios from "axios";
 import { environments } from "../../constants/environments";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
-import { setSignupState } from "../../redux/slices/signupStateSlice";
+import { setLoginState } from "../../redux/slices/loginStateSlice";
 
-const SignupForm = () => {
-  const nameRef = React.useRef<HTMLInputElement>(null);
-  const phoneRef = React.useRef<HTMLInputElement>(null);
-  const companyNameRef = React.useRef<HTMLInputElement>(null);
+const LoginForm = () => {
   const companyEmailRef = React.useRef<HTMLInputElement>(null);
-  const companySizeRef = React.useRef<HTMLInputElement>(null);
   const dispatch = useDispatch();
 
   const formFields: any = [
-    {
-      icon: IconPaths.person,
-      type: "text",
-      placeholder: "Name",
-      ref: nameRef,
-    },
-    {
-      icon: IconPaths.phone,
-      type: "number",
-      placeholder: "Phone no.",
-      ref: phoneRef,
-    },
-    {
-      icon: IconPaths.person,
-      type: "text",
-      placeholder: "Company Name",
-      ref: companyNameRef,
-    },
     {
       icon: IconPaths.mail,
       type: "email",
       placeholder: "Company Email",
       ref: companyEmailRef,
-    },
-    {
-      icon: IconPaths.groups,
-      type: "number",
-      placeholder: "Company Size",
-      ref: companySizeRef,
     }
   ]
 
@@ -52,21 +24,16 @@ const SignupForm = () => {
     e.preventDefault();
     try {
       const data = {
-        name: nameRef.current?.value || "",
-        phoneNumber: phoneRef.current?.value.toString() || "",
-        companyName: companyNameRef.current?.value || "",
-        companyEmail: companyEmailRef.current?.value || "",
-        companySize: Number(companySizeRef.current?.value) || 0,
+        companyEmail: companyEmailRef.current?.value || ""
       }
 
-      const url = `${environments.serverBaseUrl}/api/signup`;
+      const url = `${environments.serverBaseUrl}/api/login`;
       const response = await axios.post(url, data);
       // console.log("Response :: ", response);
-      if (response.status === 201) {
+      if (response.status === 200) {
         toast(response?.data.message);
-        dispatch(setSignupState("verify"))
+        dispatch(setLoginState("verify"))
         localStorage.setItem("userId", response?.data.data.id);
-        localStorage.setItem("email", response?.data.data.companyEmail);
         localStorage.setItem("name", response?.data.data.name);
 
         const OtpRequestPayload = {
@@ -76,15 +43,13 @@ const SignupForm = () => {
 
         const sendOtpUrl = `${environments.serverBaseUrl}/api/sendEmailOTP`;
         const res = await axios.post(sendOtpUrl, OtpRequestPayload);
-        // const res = {status: 20}
         if (res.status === 200){
           toast.success("OTP sent to your email");
         }else{
           toast.error("Error occured while sending OTP");
         }
-        // console.log("User Created Successfully :: ", response.data);
       } else {
-        dispatch(setSignupState("signup"))
+        dispatch(setLoginState("login"))
         toast.error(response?.data.message);
       }
 
@@ -98,7 +63,7 @@ const SignupForm = () => {
 
   return (
     <div className={styles.form}>
-      <h2>Sign Up</h2>
+      <h2>Login</h2>
       <p className={styles.note}>Lorem Ipsum is simply dummy text</p>
       <div className={styles.formBox}>
         <form onSubmit={handleSubmit} method="post">
@@ -125,4 +90,4 @@ const SignupForm = () => {
   );
 };
 
-export default SignupForm;
+export default LoginForm;

@@ -8,6 +8,9 @@ function App() {
       <Link to="/signup">
         <button className={styles.button}>Sign Up</button>
       </Link>
+      <Link to="/login">
+        <button className={styles.button}>Login</button>
+      </Link>
       <Link to="/dashboard">
         <button className={styles.button}>Dashboard</button>
       </Link>
