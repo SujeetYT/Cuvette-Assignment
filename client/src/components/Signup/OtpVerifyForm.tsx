@@ -40,7 +40,6 @@ const  OtpVerifyForm = () => {
         localStorage.setItem("token", response?.data.token);
         setEmailVerified(true);
 
-        localStorage.removeItem("userId");
         localStorage.removeItem("email");
       }
   
@@ -56,26 +55,41 @@ const  OtpVerifyForm = () => {
     }
   }
 
-  const handleMobileOTPSubmit = (e: React.FormEvent) => {
+  const handleMobileOTPSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // const mobileOTP = mobileOTPRef.current?.value;
-      // console.log("data", mobileOTP);
-  
-      setMobileVerified(true);
-    } catch (error) {
-      // toast.error(response?.data.message);
-      console.log(error);
+      const mobileOTP = mobileOTPRef.current?.value;
+      console.log(mobileOTP);
+      const data = {
+        "userId": localStorage.getItem("userId"),
+        "otp": mobileOTP
+      }
+      // verify email OTP
+      const url = `${environments.serverBaseUrl}/api/verifyPhoneOTP`;
+      const response = await axios.post(url, data);
+
+      if(response.status === 200) {
+        toast.success(response?.data.message);
+        setMobileVerified(true);
+      }
       
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        toast.error(error.response.data.message);
+      }else{
+        toast.error("An unexpected error occurred");
+      }
+      
+      console.log(error);
     }
   }
 
   useEffect(() => {
-    if(location.pathname === "/login"){
+    if (location.pathname === "/login") {
       setShowMobileOTP(false);
       setMobileVerified(true);
       setTitle("Login");
-    }else{
+    } else {
       setTitle("Sign Up");
     }
 
@@ -86,14 +100,14 @@ const  OtpVerifyForm = () => {
   }, []);
 
   // console.log({mobileVerified, showMobileOTP });
-  
+
 
   useEffect(() => {
     if (emailVerified && mobileVerified) {
       navigate("/dashboard");
       dispatch(logIn());
     }
-  },[emailVerified, mobileVerified]);
+  }, [emailVerified, mobileVerified]);
 
   return (
     <div className={styles.form}>

@@ -10,7 +10,6 @@ import emailOTPVerification from "../controller/emailOTPVerification.controller"
 SignupRouter.post('/signup', SignupController.create)
 SignupRouter.post('/sendEmailOTP', emailOTPVerification.sendOTP)
 SignupRouter.post('/verifyEmailOTP', emailOTPVerification.verifyOTP)
-SignupRouter.post('/sendOtpVerificationPhone', SignupController.create)
 
 
 export default SignupRouter;

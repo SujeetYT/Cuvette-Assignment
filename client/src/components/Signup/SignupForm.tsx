@@ -24,8 +24,8 @@ const SignupForm = () => {
     },
     {
       icon: IconPaths.phone,
-      type: "number",
-      placeholder: "Phone no.",
+      type: "tel",
+      placeholder: "+91-XXXXXXXXXX",
       ref: phoneRef,
     },
     {
@@ -64,33 +64,57 @@ const SignupForm = () => {
       // console.log("Response :: ", response);
       if (response.status === 201) {
         toast(response?.data.message);
-        dispatch(setSignupState("verify"))
         localStorage.setItem("userId", response?.data.data.id);
         localStorage.setItem("email", response?.data.data.companyEmail);
         localStorage.setItem("name", response?.data.data.name);
 
-        const OtpRequestPayload = {
+
+        // sending OTP to email
+        const EmailOtpRequestPayload = {
           "_id": response?.data.data.id,
           "email": response?.data.data.companyEmail
         }
 
-        const sendOtpUrl = `${environments.serverBaseUrl}/api/sendEmailOTP`;
-        const res = await axios.post(sendOtpUrl, OtpRequestPayload);
+        const sendEmailOtpUrl = `${environments.serverBaseUrl}/api/sendEmailOTP`;
+        const emailOtpResponse = await axios.post(sendEmailOtpUrl, EmailOtpRequestPayload);
         // const res = {status: 20}
-        if (res.status === 200){
+        if (emailOtpResponse.status === 200){
           toast.success("OTP sent to your email");
         }else{
-          toast.error("Error occured while sending OTP");
+          toast.error("Error occured while sending email OTP");
         }
-        // console.log("User Created Successfully :: ", response.data);
+
+
+        // sending OTP to phone number
+        const MobileOtpRequestPayload = {
+          "_id": response?.data.data.id,
+          "phoneNumber": data.phoneNumber
+        }
+
+        const sendMobileOtpUrl = `${environments.serverBaseUrl}/api/sendPhoneOTP`;
+        const mobileOtpResponse = await axios.post(sendMobileOtpUrl, MobileOtpRequestPayload);
+        // const res = {status: 20}
+        if (mobileOtpResponse.status === 200){
+          toast.success("OTP sent to your mobile");
+        }else{
+          toast.error("Error occured while sending mobile OTP");
+        }
+
+
+        dispatch(setSignupState("verify"))
       } else {
         dispatch(setSignupState("signup"))
         toast.error(response?.data.message);
       }
 
     } catch (error) {
-      console.log("Error :: ", error);
+      if (axios.isAxiosError(error) && error.response) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error("An unexpected error occurred");
+      }
 
+      console.log("Error :: ", error);
     }
 
   }
@@ -114,6 +138,7 @@ const SignupForm = () => {
               </div>
             ))
           }
+          <div id="recaptcha-container"></div>
           <p className={styles.note}>By clicking on proceed you wil accept our</p>
           <p className={styles.termsAndConditions}>
             <span>Terms</span> & <span>Conditions</span>

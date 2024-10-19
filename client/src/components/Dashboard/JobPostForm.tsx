@@ -68,7 +68,7 @@ const JobPostForm = () => {
     },
     {
       label: "Add Candidate",
-      placeholder: "Enter Candidate Email",
+      placeholder: "Enter email and press enter",
       inputType: "email",
     },
     {
@@ -106,9 +106,16 @@ const JobPostForm = () => {
         toast.success(response?.data.message);
         console.log(response?.data.message);
       }
-    } catch (error) {
-      toast.error("Unexpected error occurred");
-      console.log(error);
+
+    } catch (error) {      
+      if (axios.isAxiosError(error) && error.response) {
+        toast.error(error.response.data.message);
+        
+      } else {
+        toast.error("An unexpected error occurred");
+      }
+
+      console.log("Error :: ", error);
     }
 
   }

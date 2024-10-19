@@ -9,13 +9,14 @@ interface AuthenticatedRequest extends Request {
 export function isAuthenticated(req: AuthenticatedRequest, res: Response, next: NextFunction):any{
   
   let token:string | undefined | null = req.headers['authorization']
-  token = token?.split(' ')[1];
-
-  if (token === "" || token === undefined || token === null || token === "null") {
+  
+  if (token === "" || token === undefined || token === null || token === "null" || token === "undefined") {
     return res.status(401).json({
       message: 'Token is required',
     });
   }
+
+  token = token?.split(' ')[1];
   
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
   

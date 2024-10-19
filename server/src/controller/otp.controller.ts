@@ -1,24 +1,20 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-import bcrypt from "bcrypt";
 import { Request, Response } from "express";
 import generateOTP from "../utils/generateOTP";
-import EmailOTPVerification from '../models/emailOTPVerification.model';
-import transporter from "../utils/mailTransport";
+import bcrypt from "bcrypt";
+import MobileOTPVerification from "../models/mobileOTPVerification.model";
 import User from "../models/user.model";
+import sendWhatsAppMessage from "../services/sendWhatsAppMessage";
 import jwt from "jsonwebtoken";
 
-
-const emailOTPVerification = {
-  /**
- * Sends an OTP verification email to the specified email address.
- *
- */
-  sendOTP: async (req: Request, res: Response):Promise<any> => {
+const OtpController = {
+  sendPhoneOtp: async (req: Request, res: Response): Promise<any> => {
+    // code to send OTP to phone
     try {
-      const { _id, email } = req.body;
-      if(!_id || !email) {
+      const { _id, phoneNumber } = req.body;
+      if (!_id || !phoneNumber) {
         return res?.status(400).json({
           status: "FAILED",
           message: "Invalid request body"
@@ -26,48 +22,27 @@ const emailOTPVerification = {
       }
 
       const otp = generateOTP();
-
-      // mail options
-      const mailOptions = {
-        from: `"Sujeet Kumar" <${process.env.ETHEREAL_USERNAME}>`,
-        to: email,
-        subject: 'OTP Verification',
-        html: `
-        <html>
-          <body>
-            <p>Hi,</p>
-            <p>Thank you for signing up with us. Please use the following OTP to verify your email address</p>
-            <p><strong>${otp}</strong> is your OTP. This OTP expires in 30 minutes.</p>
-            <p>Please do not share it with anyone.</p>
-            <br/>
-            <p>Regards,</p>
-            <p>Team Cuvette</p>
-          </body>
-        </html>
-        `,
-      };
+      // console.log("Mobile OTP :: ", otp);
 
       const saltRounds = 10;
-
       const hashedOTP = await bcrypt.hash(otp.toString(), saltRounds);
-      // console.log("Hashed OTP :: ", hashedOTP);
 
-
-      const newOTPVerification = await new EmailOTPVerification({
+      const newOTPVerification = await new MobileOTPVerification({
         userId: _id,
         otp: hashedOTP,
         expiry: Date.now() + 1800000, // 30 minutes
       });
 
       await newOTPVerification.save();
-      // console.log("Email OTP ::", otp);
-      
-      const result = await transporter.sendMail(mailOptions);
-      console.log(":: debugger point ::", result);
+
+      // send OTP to phone
+      const formattedPhoneNumber = "+91" + phoneNumber;
+      const response = await sendWhatsAppMessage(otp, formattedPhoneNumber);
+      console.log("Response from Twilio :: ", response);
 
       res?.status(200).json({
         status: "SUCCESS",
-        message: "Email OTP sent successfully",
+        message: "Mobile OTP sent successfully",
       });
     } catch (error) {
       console.error('Error sending OTP verification email:', error);
@@ -78,24 +53,20 @@ const emailOTPVerification = {
       });
     }
   },
-
-  /**
- * Verifies sent OTP .
- *
- */
-  verifyOTP: async (req: Request, res: Response):Promise<any> => {
+  verifyPhoneOtp: async (req: Request, res: Response): Promise<any> => {
+    // code to verify OTP from phone
     try {
       const { userId, otp } = req.body;
-      if(!userId || !otp) {
+      if (!userId || !otp) {
         return res?.status(400).json({
           status: "FAILED",
           message: "Invalid request body"
         });
       }
-      
-      const otpVerification = await EmailOTPVerification.findOne({userId});
+
+      const otpVerification = await MobileOTPVerification.findOne({ userId });
       // console.log("OTP Verification :: ", otpVerification);
-      
+
       if (!otpVerification) {
         return res?.status(404).json({
           status: "FAILED",
@@ -122,7 +93,7 @@ const emailOTPVerification = {
       // set user as verified
       const user = await User.findOneAndUpdate({ _id: userId }, { isVerified: true });
       // console.log("User ::", user);
-      
+
       if (!process.env.JWT_SECRET) {
         throw new Error("JWT_SECRET is not defined in environment variables");
       }
@@ -134,11 +105,10 @@ const emailOTPVerification = {
         expiresIn: 86400, // 24 hours
       });
 
-      await EmailOTPVerification.deleteOne({ userId });
+      await MobileOTPVerification.deleteOne({ userId });
       res?.status(200).json({
         status: "SUCCESS",
-        message: "Email OTP verified successfully",
-        name: user?.name,
+        message: "Mobile OTP verified successfully",
         token,
       });
     } catch (error) {
@@ -152,4 +122,4 @@ const emailOTPVerification = {
   }
 }
 
-export default emailOTPVerification;
+export default OtpController;

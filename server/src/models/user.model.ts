@@ -11,6 +11,7 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Phone number is required'],
     match: [/^\d{10}$/, 'Phone number must be a valid 10-digit number'],
+    unique: [true, 'Phone number already exists'],
   },
   companyName: {
     type: String,

@@ -6,10 +6,12 @@ import { environments } from "../../constants/environments";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { setLoginState } from "../../redux/slices/loginStateSlice";
+import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
   const companyEmailRef = React.useRef<HTMLInputElement>(null);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const formFields: any = [
     {
@@ -24,7 +26,12 @@ const LoginForm = () => {
     e.preventDefault();
     try {
       const data = {
-        companyEmail: companyEmailRef.current?.value || ""
+        companyEmail: companyEmailRef.current?.value
+      }
+
+      if (!data.companyEmail){
+        toast.error("Please fill all the fields");
+        return;
       }
 
       const url = `${environments.serverBaseUrl}/api/login`;
@@ -54,8 +61,13 @@ const LoginForm = () => {
       }
 
     } catch (error) {
-      console.log("Error :: ", error);
+      if (axios.isAxiosError(error) && error.response?.status === 404){
+        dispatch(setLoginState("signup"));
+        toast.error(error.response?.data.message);
+        navigate("/signup");
+      }
 
+      console.log("Error :: ", error);
     }
 
   }
