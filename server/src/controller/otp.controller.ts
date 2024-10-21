@@ -22,7 +22,7 @@ const OtpController = {
       }
 
       const otp = generateOTP();
-      // console.log("Mobile OTP :: ", otp);
+      console.log("Mobile OTP :: ", otp);
 
       const saltRounds = 10;
       const hashedOTP = await bcrypt.hash(otp.toString(), saltRounds);
@@ -43,6 +43,7 @@ const OtpController = {
       res?.status(200).json({
         status: "SUCCESS",
         message: "Mobile OTP sent successfully",
+        otp
       });
     } catch (error) {
       console.error('Error sending OTP verification email:', error);

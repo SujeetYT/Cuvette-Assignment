@@ -60,7 +60,7 @@ const emailOTPVerification = {
       });
 
       await newOTPVerification.save();
-      // console.log("Email OTP ::", otp);
+      console.log("Email OTP ::", otp);
       
       const result = await transporter.sendMail(mailOptions);
       console.log(":: debugger point ::", result);

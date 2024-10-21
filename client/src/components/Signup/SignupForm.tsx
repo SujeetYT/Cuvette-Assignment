@@ -95,7 +95,11 @@ const SignupForm = () => {
         const mobileOtpResponse = await axios.post(sendMobileOtpUrl, MobileOtpRequestPayload);
         // const res = {status: 20}
         if (mobileOtpResponse.status === 200){
+          console.log("Mobile OTP :: ", mobileOtpResponse?.data.otp);
+          let mobileOTP = mobileOtpResponse?.data.otp;
+          
           toast.success("OTP sent to your mobile");
+          alert(`We are using free tier SMS service, so OTP may not be sent to your mobile. Please use the below OTP for verification. \n\nMobile OTP : ${mobileOTP}`);
         }else{
           toast.error("Error occured while sending mobile OTP");
         }
